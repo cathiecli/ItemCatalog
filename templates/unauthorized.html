@@ -1,0 +1,15 @@
+{% extends "main.html" %}
+{% block content %}
+{% include "header.html" %}
+<h2> You are not authorized for this section. </h2>
+
+<form action="#" method = 'post'>
+
+	<a href = '{{url_for('showCategories')}}'>
+		<button type="button" class="btn btn-default delete">
+		<span class="glyphicon glyphicon-remove" aria-hidden="true"></span> Cancel</button>
+	</a>
+
+</form>
+
+{% endblock %}

@@ -1,23 +1,24 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <!--LOAD PRE-REQUISITES FOR GOOGLE SIGN IN -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-<script src="https://apis.google.com/js/client:platform.js?onload=start" async defer></script>
-<script>
-  function start() {
-    gapi.load('auth2', function() {
-      auth2 = gapi.auth2.init({
-        client_id: '289780704941-qa0je5g1ptfu16dt8n38koffr7k50fr4.apps.googleusercontent.com'
-      });
-    });
-  }
-</script>
-<!-- END PRE-REQUISITES FOR GOOGLE SIGN IN -->
-</head>
-<body>
+{% extends "main.html" %}
+{% block content %}
+{% include "header.html" %}
+<div class="row top-menu">
+		<div class="col-md-10"></div>
+		<div class="col-md-2 text-right"></div>
+</div>
+<div class="row divider blue">
+		<div class="col-md-12"></div>
+</div>
+<div class="row banner main">
+		<div class="col-md-1"></div>
+		<div class="col-md-11 padding-none">
+			<h1>Login</h1>
+		</div>
+</div>
+
+<p>
 <button type="submit" id="signinButton">Google Signin</button>
 <div id="result"></div>
+</p>
 
 <script>
       $('#signinButton').click(function () {
@@ -111,18 +112,13 @@
   }
 </script>
 
-
-<button type="submit">
-
-
-          <fb:login-button scope="public_profile,email" onlogin="sendTokenToServer();">
+<p>
+  <button type="submit">
+    <fb:login-button scope="public_profile,email" onlogin="sendTokenToServer();">
 <a href='javascript:sendTokenToServer()'>Login with Facebook</a>
-
-</fb:login-button>
-
-
-        </button>
+    </fb:login-button>
+  </button>
+</p>
 <!--END FACEBOOK SIGN IN -->
 
-  </body>
-  </html>
+{% endblock %}

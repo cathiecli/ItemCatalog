@@ -45,6 +45,16 @@ session = DBSession()
 # Store it in the session for later validation.
 @app.route('/login')
 def showLogin():
+    """
+    showLogin function returns login.html page.
+
+    showLogin function takes the following parameters.
+    args:
+    N/A
+
+    returns:
+    display login.html page.
+    """
     state = ''.join(random.choice(string.ascii_uppercase +
                     string.digits) for x in xrange(32))
     login_session['state'] = state
@@ -54,6 +64,17 @@ def showLogin():
 
 @app.route('/fbconnect', methods=['POST'])
 def fbconnect():
+    """
+    fbconnect function authenticates facebook user, being called from
+    login.html.
+
+    fbconnect function takes the following parameters.
+    args:
+    N/A
+
+    returns:
+    facebook user information after authentication.
+    """
     if request.args.get('state') != login_session['state']:
         response = make_response(json.dumps('Invalid state parameter.'), 401)
         response.headers['Content-Type'] = 'application/json'
@@ -132,6 +153,17 @@ def fbconnect():
 
 @app.route('/fbdisconnect')
 def fbdisconnect():
+    """
+    fbdisconnect function disconnect logged-in facebook user, being called from
+    disconnect() function.
+
+    fbdisconnect function takes the following parameters.
+    args:
+    N/A
+
+    returns:
+    facebook user disconnected.
+    """
     facebook_id = login_session['facebook_id']
     # The access token must me included to successfully logout
     access_token = login_session['access_token']
@@ -144,6 +176,17 @@ def fbdisconnect():
 
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
+    """
+    gconnect function authenticates google user, being called from
+    login.html.
+
+    gconnect function takes the following parameters.
+    args:
+    N/A
+
+    returns:
+    google user information after authentication.
+    """
     # Validate state token
     if request.args.get('state') != login_session['state']:
         response = make_response(json.dumps('Invalid state parameter.'), 401)
@@ -214,6 +257,9 @@ def gconnect():
     login_session['picture'] = data['picture']
     login_session['email'] = data['email']
 
+    # assign provider value so that disconnect() can properly route
+    login_session['provider'] = 'google'
+
     # see if user exists, if it doesn't make a new one
     user_id = getUserID(login_session['email'])
     if not user_id:
@@ -237,6 +283,17 @@ def gconnect():
 
 
 def createUser(login_session):
+    """
+    createUser function create the logged-in user as a user with
+    this application.
+
+    createUser function takes the following parameters.
+    args:
+    login_session
+
+    returns:
+    a new user is created in user table
+    """
     newUser = User(name=login_session['username'],
                    email=login_session['email'])
     session.add(newUser)
@@ -246,11 +303,31 @@ def createUser(login_session):
 
 
 def getUserInfo(user_id):
+    """
+    getUserInfo function gets user information per user_id.
+
+    getUserInfo function takes the following parameters.
+    args:
+    user_id
+
+    returns:
+    a user object for the input user_id
+    """
     user = session.query(User).filter_by(id=user_id).one()
     return user
 
 
 def getUserID(email):
+    """
+    getUserID function gets user id per logged-in user email.
+
+    getUserID function takes the following parameters.
+    args:
+    email
+
+    returns:
+    the user's id per his/her email
+    """
     try:
         user = session.query(User).filter_by(email=email).one()
         return user.id
@@ -260,6 +337,17 @@ def getUserID(email):
 
 @app.route('/gdisconnect')
 def gdisconnect():
+    """
+    gdisconnect function disconnect logged-in google user, being called from
+    disconnect() function.
+
+    gdisconnect function takes the following parameters.
+    args:
+    N/A
+
+    returns:
+    google user disconnected.
+    """
     access_token = login_session.get('access_token')
     if access_token is None:
         print 'Access Token is None'
@@ -297,6 +385,16 @@ def gdisconnect():
 # view category table data only
 @app.route('/categories/JSON')
 def categoriesJSON():
+    """
+    categoriesJSON function show endpoints of category table.
+
+    categoriesJSON function takes the following parameters.
+    args:
+    N/A
+
+    returns:
+    JSON endpoint for categories.
+    """
     categories = session.query(Category).all()
     return jsonify(categories=[r.serialize for r in categories])
 
@@ -304,6 +402,16 @@ def categoriesJSON():
 # view items for a specific category data only
 @app.route('/categories/<int:category_id>/item/JSON')
 def showItemJSON(category_id):
+    """
+    showItemJSON function show endpoints of item table per category_id.
+
+    showItemJSON function takes the following parameters.
+    args:
+    N/A
+
+    returns:
+    JSON endpoint for items per category_id.
+    """
     category = session.query(Category).filter_by(id=category_id).one()
     items = session.query(Item).filter_by(category_id=category_id).all()
     return jsonify(Items=[i.serialize for i in items])
@@ -312,6 +420,16 @@ def showItemJSON(category_id):
 # view a specific item data only
 @app.route('/categories/<int:category_id>/item/<int:item_id>/JSON')
 def itemJSON(category_id, item_id):
+    """
+    itemJSON function show endpoints of a particular item per item_id.
+
+    itemJSON function takes the following parameters.
+    args:
+    category_id, item_id
+
+    returns:
+    JSON endpoint for a particular item per item_id.
+    """
     item = session.query(Item).filter_by(id=item_id).one()
     return jsonify(Item=item.serialize)
 
@@ -320,6 +438,16 @@ def itemJSON(category_id, item_id):
 @app.route('/')
 @app.route('/categories')
 def showCategories():
+    """
+    showCategories function shows all categories.
+
+    showCategories function takes the following parameters.
+    args:
+    N/A
+
+    returns:
+    display all categories in categories.html page.
+    """
     categories = session.query(Category).all()
     return render_template('categories.html', categories=categories)
 
@@ -327,6 +455,17 @@ def showCategories():
 # Create a new category
 @app.route('/category/new', methods=['GET', 'POST'])
 def newCategory():
+    """
+    newCategory function allows user to create a new category.
+
+    newCategory function takes the following parameters.
+    args:
+    N/A
+
+    returns:
+    a new category and stored in category table.
+    """
+    # check authentication
     if 'username' not in login_session:
         return redirect('/login')
     if request.method == 'POST':  # executed when POST is performed
@@ -344,13 +483,23 @@ def newCategory():
 # Edit a category
 @app.route('/category/<int:category_id>/edit', methods=['GET', 'POST'])
 def editCategory(category_id):
+    """
+    editCategory function allows user to edit an existing category per
+    category_id.
+
+    editCategory function takes the following parameters.
+    args:
+    category_id
+
+    returns:
+    an existing category is being updated and stored in category table.
+    """
+    # check authentication
     if 'username' not in login_session:
         return redirect('/login')
     editedCategory = session.query(Category).filter_by(id=category_id).one()
-    print("here: editedCategory.user_id = " + str(editedCategory.user_id))
-    print("here: login_session['user_id'] = " + str(login_session['user_id']))
     if editedCategory.user_id != login_session['user_id']:
-        return "<script> {alert('Unauthorized');}</script>"
+        return render_template('unauthorized.html')
     if request.method == 'POST':
         if request.form['name']:
             editedCategory.name = request.form['name']
@@ -367,9 +516,24 @@ def editCategory(category_id):
 # Delete a category
 @app.route('/category/<int:category_id>/delete', methods=['GET', 'POST'])
 def deleteCategory(category_id):
+    """
+    deleteCategory function allows user to delete an existing category per
+    category_id.
+
+    deleteCategory function takes the following parameters.
+    args:
+    category_id
+
+    returns:
+    an existing category is being deleted from category table.
+    """
+    # check authentication
     if 'username' not in login_session:
         return redirect('/login')
     categoryToDelete = session.query(Category).filter_by(id=category_id).one()
+    # check authorization
+    if categoryToDelete.user_id != login_session['user_id']:
+        return render_template('unauthorized.html')
     if request.method == 'POST':
         session.delete(categoryToDelete)
         session.commit()
@@ -384,10 +548,24 @@ def deleteCategory(category_id):
 @app.route('/category/<int:category_id>/')
 @app.route('/category/<int:category_id>/item')
 def showItem(category_id):
+    """
+    showItem function shows all the items belonging to a particular category
+
+    showItem function takes the following parameters.
+    args:
+    category_id
+
+    returns:
+    display all items of a category in item.html.
+    """
+    # check authentication
+    if 'username' not in login_session:
+        return redirect('/login')
     category_authorized = 'N'
     category = session.query(Category).filter_by(id=category_id).one()
 
-    # determine whether the login user has the authorization to category
+    # check authorization: determine show/hide "Edit Category" and
+    # "Delete Category" button in item.html
     if category.user_id == login_session['user_id']:
         category_authorized = 'Y'
 
@@ -403,6 +581,17 @@ def showItem(category_id):
 # Create a new category item
 @app.route('/category/<int:category_id>/item/new', methods=['GET', 'POST'])
 def newItem(category_id):
+    """
+    newItem function creates a new item of a particular category
+
+    newItem function takes the following parameters.
+    args:
+    category_id
+
+    returns:
+    create a new item in newItem.html.
+    """
+    # check authentication
     if 'username' not in login_session:
         return redirect('/login')
     if request.method == 'POST':  # executed when POST is performed
@@ -424,9 +613,23 @@ def newItem(category_id):
 @app.route('/category/<int:category_id>/<int:item_id>/edit',
            methods=['GET', 'POST'])
 def editItem(category_id, item_id):
+    """
+    editItem function edits an existing item
+
+    editItem function takes the following parameters.
+    args:
+    category_id, item_id
+
+    returns:
+    edit an existing item in editItem.html.
+    """
+    # check authentication
     if 'username' not in login_session:
         return redirect('/login')
     editedItem = session.query(Item).filter_by(id=item_id).one()
+    # check authorization
+    if editedItem.user_id != login_session['user_id']:
+        return render_template('unauthorized.html')
     if request.method == 'POST':
         if request.form['name']:
             editedItem.name = request.form['name']
@@ -447,9 +650,23 @@ def editItem(category_id, item_id):
 @app.route('/category/<int:category_id>/<int:item_id>/delete',
            methods=['GET', 'POST'])
 def deleteItem(category_id, item_id):
+    """
+    deleteItem function deletes an existing item
+
+    deleteItem function takes the following parameters.
+    args:
+    category_id, item_id
+
+    returns:
+    delete an existing item in deleteItem.html.
+    """
+    # check authentication
     if 'username' not in login_session:
         return redirect('/login')
     itemToDelete = session.query(Item).filter_by(id=item_id).one()
+    # check authorization
+    if itemToDelete.user_id != login_session['user_id']:
+        return render_template('unauthorized.html')
     if request.method == 'POST':
         session.delete(itemToDelete)
         session.commit()
@@ -459,20 +676,30 @@ def deleteItem(category_id, item_id):
         return render_template('deleteItem.html', item=itemToDelete)
 
 
-# Disconnect based on provider
+# Disconnect based on provider either google or facebook
 @app.route('/disconnect')
 def disconnect():
+    """
+    disconnect function allows user to log out
+
+    disconnect function takes the following parameters.
+    args:
+    N/A
+
+    returns:
+    user log out through a link in header.html.
+    """
     if 'provider' in login_session:
         if login_session['provider'] == 'google':
             gdisconnect()
-            del login_session['gplus_id']
-            del login_session['access_token']
+            # del login_session['gplus_id']
+            # del login_session['access_token']
         if login_session['provider'] == 'facebook':
             fbdisconnect()
             del login_session['facebook_id']
-        del login_session['username']
-        del login_session['email']
-        del login_session['picture']
+        # del login_session['username']
+        # del login_session['email']
+        # del login_session['picture']
         del login_session['user_id']
         del login_session['provider']
         flash("You have successfully been logged out.")

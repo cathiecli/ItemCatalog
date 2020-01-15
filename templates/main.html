@@ -4,6 +4,19 @@
 		<link href='http://fonts.googleapis.com/css?family=Roboto:400,300,700' rel='stylesheet' type='text/css'>
 		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
 		<link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
+		<!--LOAD PRE-REQUISITES FOR GOOGLE SIGN IN -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+		<script src="https://apis.google.com/js/client:platform.js?onload=start" async defer></script>
+		<script>
+		  function start() {
+		    gapi.load('auth2', function() {
+		      auth2 = gapi.auth2.init({
+		        client_id: '289780704941-qa0je5g1ptfu16dt8n38koffr7k50fr4.apps.googleusercontent.com'
+		      });
+		    });
+		  }
+		</script>
+		<!-- END PRE-REQUISITES FOR GOOGLE SIGN IN -->
 	</head>
 	<body>
 		<div class="container">
